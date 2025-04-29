@@ -1,0 +1,23 @@
+/* Light mode (default) */
+:root {
+    --color-bg: #ffffff;
+    --color-text: #000000;
+    --color-primary: #52525b;
+    --color-hover: ##e4e4e7;
+  }
+  
+  /* Dark mode */
+  .dark {
+    --color-bg: #0d1117;
+    --color-text: #c9d1d9;
+    --color-primary: #52525b;
+    --color-hover: #e4e4e7;
+  }
+  
+  /* Base styles */
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
