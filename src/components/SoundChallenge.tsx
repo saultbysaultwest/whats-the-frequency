@@ -1,11 +1,17 @@
 import { useState } from "react";
-import { FiFastForward, FiCheck, FiX } from "react-icons/fi";
+import { FiFastForward, FiCheck, FiX, FiChevronsRight, FiChevronsLeft } from "react-icons/fi";
+import SubmitScoreForm from "./SubmitScoreForm";
 
 const SoundChallenge = () => {
   const [frequencies, setFrequencies] = useState<number[]>([]);
   const [targetFrequency, setTargetFrequency] = useState<number | null>(null);
   const [selectedFrequency, setSelectedFrequency] = useState<number | null>(null);
   const [isAnswered, setIsAnswered] = useState(false);
+
+  const [streak, setStreak] = useState(0);
+  const [isChallengeMode, setIsChallengeMode] = useState(false);
+  const [isChallengeOver, setIsChallengeOver] = useState(false);
+  
 
   const playSineWave = (frequency: number) => {
     const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -26,13 +32,14 @@ const SoundChallenge = () => {
     let options = new Set<number>();
     options.add(target);
 
-    while (options.size < 5) {
+    while (options.size < 4) {
       const freq = rand();
       if (!options.has(freq)) {
         options.add(freq);
       }
     }
 
+  
     const optionsArray = Array.from(options);
     shuffleArray(optionsArray);
 
@@ -42,6 +49,16 @@ const SoundChallenge = () => {
     setIsAnswered(false);
 
     playSineWave(target);
+  };
+
+  const startChallengeMode = () => {
+    if (!isChallengeMode) {
+      setStreak(0); // reset score
+    }
+    
+    setIsChallengeMode(true);
+    setIsChallengeOver(false);
+    startChallenge(); // reuse your existing startChallenge logic
   };
 
   const shuffleArray = (array: any[]) => {
@@ -55,7 +72,17 @@ const SoundChallenge = () => {
     if (!isAnswered) {
       setSelectedFrequency(freq);
       setIsAnswered(true);
+
+      if (freq === targetFrequency) {
+        setStreak((prev) => prev + 1);
+      } else {
+        if (isChallengeMode) {
+          setIsChallengeOver(true);
+        }
+        setStreak(0);
+      }
     }
+
   };
 
   const isCorrect = (freq: number) => freq === targetFrequency;
@@ -65,18 +92,37 @@ const SoundChallenge = () => {
       {/* Rules Box */}
       <div className="border border-black rounded-md p-4 max-w-md text-center">
         <p>
-          Press the "Let's Go!" button to hear a random frequency. Pick the correct
-          frequency from the options!
+          Press the practice button to hear a random frequency. Pick the correct
+          frequency from the options! When you're ready, try the Challenge mode!
         </p>
       </div>
 
-      {/* Play Sound Button */}
-      <div
-        className="flex items-center gap-2 cursor-pointer hover:opacity-80"
-        onClick={startChallenge}
-      >
-        <FiFastForward className="text-4xl" />
-        <span className="text-xl">Let's Go!</span>
+      <button
+  className={`flex items-center gap-2 text-xl transition-opacity duration-300 ${
+    isChallengeMode && !isChallengeOver ? "opacity-40 cursor-not-allowed" : "hover:opacity-80 cursor-pointer"
+  }`}
+  onClick={startChallenge}
+  disabled={isChallengeMode && !isChallengeOver}
+>
+  <FiFastForward className="text-4xl" />
+  <span>Practice</span>
+</button>
+
+
+
+
+<button
+  className="flex items-center gap-2 hover:opacity-80 text-xl cursor-pointer"
+  onClick={startChallengeMode}
+>
+  <FiFastForward className="text-4xl text-yellow-400" />
+  <span>{isChallengeMode ? "Go Again" : "Challenge Mode"}</span>
+</button>
+
+
+
+      <div className="text-lg font-bold flex items-center space-x-2">
+        <FiChevronsRight /><span>Streak: {streak}</span><FiChevronsLeft />
       </div>
 
       {/* Option Buttons */}
@@ -110,6 +156,12 @@ const SoundChallenge = () => {
           {selectedFrequency === targetFrequency ? "🎉 Correct! Well done!" : "😔 Incorrect! Better luck next time!"}
         </div>
       )}
+
+{isChallengeOver && (
+  <div className="mt-6">
+    <SubmitScoreForm score={streak} onSuccess={() => setIsChallengeMode(false)} />
+  </div>
+)}
     </div>
   );
 };
