@@ -1,5 +1,5 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { getDb } from '../src/lib/mongo';           // <-- update path if needed
+import { getDb } from './mongo.js';           // <-- update path if needed
 
 export default async function handler(
   req: VercelRequest,

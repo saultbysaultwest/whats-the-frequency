@@ -2,7 +2,12 @@ import { useState } from "react";
 import { FiFastForward, FiCheck, FiX, FiChevronsRight, FiChevronsLeft } from "react-icons/fi";
 import SubmitScoreForm from "./SubmitScoreForm";
 
-const SoundChallenge = () => {
+
+type SoundChallengeProps = {
+  onScoreSubmit?: () => void;
+};
+
+const SoundChallenge = ({ onScoreSubmit }: SoundChallengeProps) => {
   const [frequencies, setFrequencies] = useState<number[]>([]);
   const [targetFrequency, setTargetFrequency] = useState<number | null>(null);
   const [selectedFrequency, setSelectedFrequency] = useState<number | null>(null);
@@ -11,7 +16,7 @@ const SoundChallenge = () => {
   const [streak, setStreak] = useState(0);
   const [isChallengeMode, setIsChallengeMode] = useState(false);
   const [isChallengeOver, setIsChallengeOver] = useState(false);
-  
+  const [finalScore, setFinalScore] = useState(0);
 
   const playSineWave = (frequency: number) => {
     const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -78,6 +83,7 @@ const SoundChallenge = () => {
       } else {
         if (isChallengeMode) {
           setIsChallengeOver(true);
+          setFinalScore(streak);
         }
         setStreak(0);
       }
@@ -158,9 +164,15 @@ const SoundChallenge = () => {
       )}
 
 {isChallengeOver && (
-  <div className="mt-6">
-    <SubmitScoreForm score={streak} onSuccess={() => setIsChallengeMode(false)} />
-  </div>
+    <div className="mt-6">
+      <SubmitScoreForm 
+        score={finalScore} 
+        onSuccess={() => {
+          setIsChallengeMode(false);
+          if (onScoreSubmit) onScoreSubmit();
+        }} 
+      />
+    </div>
 )}
     </div>
   );

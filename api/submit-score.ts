@@ -1,6 +1,6 @@
 // api/submit-score.ts
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { getDb } from '../src/lib/mongo';
+import { getDb } from './mongo.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).send('Method not allowed');

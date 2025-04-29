@@ -5,12 +5,17 @@ type ScoreEntry = {
   score: number;
 };
 
-const Leaderboard = () => {
+type LeaderboardProps = {
+  refresh: boolean;
+};
+
+const Leaderboard = ({ refresh }: LeaderboardProps) => {
   const [scores, setScores] = useState<ScoreEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchScores = async () => {
+      setLoading(true); // 🛠️ Add this so loading shows again on refresh
       try {
         const res = await fetch('/api/get-scores');
         const data = await res.json();
@@ -21,9 +26,10 @@ const Leaderboard = () => {
         setLoading(false);
       }
     };
-
+  
     fetchScores();
-  }, []);
+  }, [refresh]);
+  
 
   if (loading) return <p className="text-center mt-4">Loading leaderboard...</p>;
 
