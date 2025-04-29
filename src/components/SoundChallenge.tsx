@@ -65,7 +65,7 @@ const SoundChallenge = () => {
       {/* Rules Box */}
       <div className="border border-black rounded-md p-4 max-w-md text-center">
         <p>
-          Press the "Begin!" button to hear a random frequency. Pick the correct
+          Press the "Let's Go!" button to hear a random frequency. Pick the correct
           frequency from the options!
         </p>
       </div>
